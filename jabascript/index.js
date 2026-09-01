@@ -29,6 +29,7 @@ const displayLevelWord = (words) =>{
         <h1 class="font-bold text-4xl">নেক্সট Lesson এ যান</h1>
        </div>
         `
+        return
     }
 
     words.forEach((word) => {
