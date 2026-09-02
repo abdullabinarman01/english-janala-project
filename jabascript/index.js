@@ -4,11 +4,75 @@ const loadLesson = () =>{
     .then((json) => displayLesson(json.data))
 }
 
+const removeActiveClass = () =>{
+    const lessonButtons = document.querySelectorAll(".lesson-btn")
+    lessonButtons.forEach((btn) => btn.classList.remove("active"));
+}
+
 const loadLevelWord = (id) =>{
+    // const clickBtn = document.getElementById(`Btn-lesson-${id}`)
+    //     clickBtn.classList.add("active")
     const url = `https://openapi.programming-hero.com/api/level/${id}`
     fetch(url)
     .then((res) => res.json())
-    .then((json) => displayLevelWord(json.data))
+    .then((json) => {
+        removeActiveClass()//remove active class
+        const clickBtn = document.getElementById(`Btn-lesson-${id}`)
+        clickBtn.classList.add("active") //adding active class
+        displayLevelWord(json.data)
+    })
+}
+
+const loadWordDetails = async (id) =>{
+    const url = `https://openapi.programming-hero.com/api/word/${id}`
+    const res = await fetch(url);
+    const details = await res.json();
+    displayWordDetails(details.data)
+}
+
+// "data": {
+// "word": "Eager",
+// "meaning": "আগ্রহী",
+// "pronunciation": "ইগার",
+// "level": 1,
+// "sentence": "The kids were eager to open their gifts.",
+// "points": 1,
+// "partsOfSpeech": "adjective",
+// "synonyms": [
+// "enthusiastic",
+// "excited",
+// "keen"
+// ],
+// "id": 5
+// }
+
+const displayWordDetails = (word) => {
+    // console.log(word)
+    const detailBox = document.getElementById("details-container")
+    detailBox.innerHTML=`
+    <div class="">
+        <h2 class="text-2xl font-bold">
+          ${word.word}(<i class="fa-solid fa-microphone-lines"></i>:${word.pronunciation})
+        </h2>
+      </div>
+      <div class="">
+        <h2 class="font-bold">
+          Meaning
+        </h2>
+        <p>${word.meaning}</p>
+      </div>
+      <div class="">
+        <h2 class="font-bold">Example</h2>
+        <p>${word.sentence}</p>
+      </div>
+      <div>
+        <h2 class="font-bold">Synonym</h2>
+        <span class="btn">Syn1</span>
+        <span class="btn">Syn1</span>
+        <span class="btn">Syn1</span>
+      </div>
+    `
+    document.getElementById("word_modal").showModal()
 }
 // {
 //     "id": 5,
@@ -41,7 +105,7 @@ const displayLevelWord = (words) =>{
           <p class="font-semibold">Meaning /Pronounciation</p>
           <div class="font-medium text-2xl font-bangla">${word.meaning? word.meaning:"can't find meaning"}/ ${word.pronunciation ? word.pronunciation:"can't find pronunciation"}</div>
           <div class="flex justify-between items-center">
-            <button class="btn bg-[#1A91FF12] hover:bg-[#1A91FF80]"><i class="fa-solid fa-circle-info"></i></button>
+            <button class="btn bg-[#1A91FF12] hover:bg-[#1A91FF80]"onclick="loadWordDetails(${word.id})"><i class="fa-solid fa-circle-info"></i></button>
             <button class="btn bg-[#1A91FF12] hover:bg-[#1A91FF80]
             "><i class="fa-solid fa-volume"></i></button>
           </div>
@@ -63,7 +127,7 @@ const displayLesson = (lessons) =>{
         const btnDiv = document.createElement("div");
         
         btnDiv.innerHTML = `
-        <button class="btn btn-soft btn-primary" onclick="loadLevelWord(${lesson.level_no})">
+        <button class="btn btn-soft btn-primary lesson-btn" id="Btn-lesson-${lesson.level_no}" onclick="loadLevelWord(${lesson.level_no})">
         <i class="fa-solid fa-book-open"></i>Lesson -${lesson.level_no}</button>
         `
         //4.append into container
